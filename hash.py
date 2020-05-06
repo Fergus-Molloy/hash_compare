@@ -1,8 +1,8 @@
 import subprocess
 import sys
-import os.path
+import os
 
-def compare(file, Hash:str):
+def compare(file:str, Hash:str):
     #get hash of file provided
     file_hash=(subprocess.check_output(['CertUtil', '-hashfile', file, 'MD5']).decode("utf-8")).split('\n')
     #should print lined up for easy verification
@@ -16,11 +16,29 @@ def compare(file, Hash:str):
             return False
     return True
 
+def compare_linux(file:str, Hash:str):
+    file_hash=(subprocess.check_output(['md5sum', file]).decode("utf-8")).split(' ')
+    print(file_hash[0])
+    print(Hash)
+    # no clue why this doesn't work on windows
+    return (file_hash[0]==Hash)
+
+
 if __name__ == "__main__":
-    # doesn't matter which way round you put the file
-    if(os.path.isfile(sys.argv[1])):
-        print(compare(sys.argv[1], sys.argv[2]))
-    elif(os.path.isfile(sys.argv[2])):
-        print(compare(sys.argv[2], sys.argv[1]))
+    if os.name == "nt":
+        # doesn't matter which way round you put the file
+        if(os.path.isfile(sys.argv[1])):
+            print(compare(sys.argv[1], sys.argv[2]))
+        elif(os.path.isfile(sys.argv[2])):
+            print(compare(sys.argv[2], sys.argv[1]))
+        else:
+            print("file not supplied")
+    elif os.name == "posix":
+        if(os.path.isfile(sys.argv[1])):
+            print(compare_linux(sys.argv[1], sys.argv[2]))
+        elif(os.path.isfile(sys.argv[2])):
+            print(compare_linux(sys.argv[2], sys.argv[1]))
+        else:
+            print("file not supplied")
     else:
-        print("file not supplied")
+        print("what OS are you using???")
