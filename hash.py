@@ -9,12 +9,14 @@ def compare(file:str, Hash:str):
     print(file_hash[1])
     print(Hash)
     # == comparator doesn't work for some reason
-    for x in range(len(file_hash[1])-1):
-        if(file_hash[1][x] != Hash[x]):
-            print(file_hash[1][x])
-            print(Hash[x])
-            return False
-    return True
+    try:
+        for x in range(len(file_hash[1])-1):
+            if(file_hash[1][x] != Hash[x]):
+                return False
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 def compare_linux(file:str, Hash:str):
     file_hash=(subprocess.check_output(['md5sum', file]).decode("utf-8")).split(' ')
